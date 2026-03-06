@@ -14,7 +14,7 @@ const userAuth = async (req, res, next) => {
     const isPassValid = await bcrypt.compare(password, user.password_hash);
 
     if (isPassValid) {
-        req.user = user;
+        req.user = user
         next();
     } else {
         res.status(402).json({

@@ -30,16 +30,17 @@ const handleRegister = async (req, res) => {
 
 
 const handleLogin = async (req, res) => {
-    const {username, role} = req.user;
+    const {username, id, role} = req.user;
     const payload = {
         username: username, 
+        id: id,
         role: role
     }
 
     const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(200).json({
-        message: "You\'re successfully logged in!", 
+        message: `Welcome ${role} You\'re successfully logged in!`, 
         token: jwtToken
     })
 }

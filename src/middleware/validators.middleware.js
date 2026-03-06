@@ -1,4 +1,4 @@
-const {body, validationResult} = require('express-validator')
+const {body, validationResult, query} = require('express-validator')
 
 const registerValidate = [
     body('username').isEmail(), 
@@ -23,7 +23,18 @@ const loginValidate = [
     }
 ]
 
-module.exports = {registerValidate, loginValidate};
+const checkoutValidate = [
+    query('course_id').notEmpty(),
+    (req, res, next) => {
+        const error = validationResult(req);
+        if(!error.isEmpty()) {
+            return res.status(400).json({error: error.array()})
+        }
+        next();
+    }
+]
+
+module.exports = {registerValidate, loginValidate, checkoutValidate};
 
 
 
