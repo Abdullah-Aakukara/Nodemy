@@ -34,7 +34,20 @@ const checkoutValidate = [
     }
 ]
 
-module.exports = {registerValidate, loginValidate, checkoutValidate};
+const uploadValidate = [
+    body('description').exists().isLength({min:10, max: 50}).withMessage("Please provide course description!"),
+    body('price').isNumeric().withMessage("Please provide course\'s price!"), 
+    body('instructor_id').isNumeric().withMessage("Please provide course instructor\'s ID!"), 
+    (req, res, next) => {
+        const error = validationResult(req);
+        if (!error.isEmpty()) {
+            return res.status(400).json({ error: error.array()})
+        }
+        next();
+    }
+]
+
+module.exports = {registerValidate, loginValidate, checkoutValidate, uploadValidate};
 
 
 

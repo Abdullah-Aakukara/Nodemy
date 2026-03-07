@@ -1,11 +1,23 @@
 const express = require('express')
 const authorize = require('../middleware/authorization.middleware');
+const { uploadValidate } = require('../middleware/validators.middleware');
+const addCourse = require('../util/addCourse');
 const courseRouter = express.Router();
 
-courseRouter.post('/upload', authorize, (req, res) => {
-    res.status(200).json({
-         message:`Welcome ${req.user.role}! YOU CAN UPLOAD NEW COURSE BY PRESSING THE UPLOAD - BUTTON BELOW!`
+courseRouter.post('/upload', uploadValidate, authorize(['admin', 'instructor']), async (req, res) => {
+    try {
+        const course = await addCourse(req.body); 
+        res.status(201).json({
+            message : `YOU have recently uploaded a NEW COURSE named: ${course.description} !`
      });
+    } catch(error) {
+        console.error(error.stack);
+        res.status(500).json({
+            message : "Internal server error, try again !"
+        })
+    }
+    
+
 })
 
 module.exports = courseRouter;

@@ -13,6 +13,11 @@ const dbClientInit = async () => {
 paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
     const courseId = Number(req.query.course_id);
     const course = await getCourse(courseId);
+    if (!course) {
+        return res.status(404).json({
+            message : `Course ${courseId} not found!` 
+        })
+    }
     let client;
 
     try{
@@ -40,14 +45,15 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
             
             await client.query('BEGIN');
             
-            await client.query('INSERT INTO transactions (user_id, amount, status) VALUES ($1, $2, $3) RETURNING *',[user.id, course.price, 'pending'])
+            const result = await client.query('INSERT INTO transactions (user_id, amount, status) VALUES ($1, $2, $3) RETURNING *',[user.id, course.price, 'pending'])
+            const transactionId = result.rows[0].transaction_id;
 
             const paymentResult = await new Promise((resolve, reject) => {
                 setTimeout(()=> resolve(Math.random() > 0.3), 3000)
             })
 
             if (paymentResult) {
-                await client.query('UPDATE transactions SET status = $1 WHERE user_id = $2',['completed', user.id]);
+                await client.query('UPDATE transactions SET status = $1 WHERE transaction_id = $2',['completed', transactionId]);
                 await client.query('INSERT INTO enrollments (student_id, enrolled_in) VALUES ($1, $2) RETURNING *', [user.id, courseId]);
                 await client.query('COMMIT');
                 res.status(200).json({
@@ -62,6 +68,7 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
                 })
             }       
         } catch(error) {
+            await client.query('ROLLBACK');
             console.error(error.stack);
             res.status(500).json({ message: "Internal server error!"})
         } finally {

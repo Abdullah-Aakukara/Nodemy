@@ -2,24 +2,28 @@ const jwt = require('jsonwebtoken');
 const {resolve} = require('path');
 require('dotenv').config({path: resolve(__dirname, '../../.env')})
 
-const authorize = (req, res, next) => {
+const authorize = (authorizedPersons) => {
+    return (req, res, next) => {
     try {
+        if (!req.headers['authorization']) {
+            return res.status(401).json({
+                message : "Missing/Invalid Authentication credentials"
+            })
+        }
         const token = req.headers['authorization'].split(' ')[1];
         if (!token) {
             return res.status(401).json({
-                message: "JWT TOKEN REQUIRED!"
+                message: "Missing/Invalid Authentication credentials"
             })
         }
 
         const user = jwt.verify(token, process.env.JWT_SECRET)
-    
-        const authorizedPersons = (req.url === '/transactions') ? ['admin']:['instructor', 'admin']
 
         const authorized = authorizedPersons.includes(user.role)
 
         if (authorized){
             req.user = user
-             next();
+            next();
         } else {
             res.status(403).json({
                 message: "YOU ARE NOT AN AUTHORIZED PERSON!"
@@ -27,8 +31,10 @@ const authorize = (req, res, next) => {
         }
 
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            message : "Internal server error!"
+        })
+    }
     }
 }
-
 module.exports = authorize;
