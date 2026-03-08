@@ -1,23 +1,23 @@
 const {body, validationResult, query} = require('express-validator')
 
 const registerValidate = [
-    body('username').isEmail(), 
-    body('password').isLength({min:5}),
+    body('username').isEmail().notEmpty(), 
+    body('password').isLength({min:5}).notEmpty(),
     (req, res, next) => {
         const error = validationResult(req);
         if (!error.isEmpty()) {
-            return res.json({error: error.array()})
+            return res.status(400).json({error: error.array()})
         }
         next();
     } ];
 
 const loginValidate = [
-    body('username').isEmail(),
-    body('password').isLength({min:5}),
+    body('username').isEmail().notEmpty(),
+    body('password').notEmpty(),
     (req, res, next) => {
         const error = validationResult(req);
         if (!error.isEmpty()) {
-            return res.json({error: error.array()})
+            return res.status(400).json({error: error.array()})
         }
         next();
     }

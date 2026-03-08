@@ -2,12 +2,20 @@ const {Pool} = require('pg');
 const {resolve} = require('path');
 
 require('dotenv').config({path: resolve(__dirname, '../../.env')})
-const pool = new Pool({
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT
-});
+
+const dbConfig = {
+    user: process.env.DB_USER || process.env.DBUSER, // Handle naming variations
+    host: process.env.DB_HOST || process.env.DBHOST,
+    password: process.env.DB_PASSWORD || process.env.DBPASS,
+    database: process.env.DB_NAME || process.env.DBNAME,
+    port: process.env.DB_PORT || 5432
+};
+
+// Check for DATABASE_URL 
+const connectionString = process.env.DATABASE_URL;
+
+const pool = new Pool(
+    connectionString ? { connectionString, ssl: { rejectUnauthorized: false } } : dbConfig
+);
 
 module.exports = pool;

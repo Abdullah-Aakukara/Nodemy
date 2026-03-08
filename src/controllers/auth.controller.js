@@ -11,7 +11,7 @@ const handleRegister = async (req, res) => {
     const {username, password} = req.body
     
     if(await doesExist(username)) {
-        return res.status(529).json(
+        return res.status(409).json(
             {
                 error: `User Already Exists!`
             }
@@ -23,7 +23,7 @@ const handleRegister = async (req, res) => {
     const user = await addNewUser(username, hashedPassword, 'student');
 
     res.status(201).json({
-       message: `Welcome ${user.role}!
+       message: `Welcome ${user.role}! \n
        Your account has been successfully created!`
     });
 }

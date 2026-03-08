@@ -17,8 +17,8 @@ const userAuth = async (req, res, next) => {
         req.user = user
         next();
     } else {
-        res.status(402).json({
-            message: "Invalid Credentials!"
+        res.status(401).json({
+            error: "Invalid Credentials!"
         })
     }
 }
