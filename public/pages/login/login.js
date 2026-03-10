@@ -14,9 +14,11 @@ const handleLogin = async (event) => {
         password: passwordInput.value, 
         role: roleInput.value
     };
+
+    console.log(data.role);
     
     try {
-        const response = await fetch('http://localhost:3000/api/auth/login', {  
+        const response = await fetch('/api/auth/login', {  
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,14 +27,18 @@ const handleLogin = async (event) => {
         });
         
         const result = await response.json();
-
+        
         if (!response.ok) {
             throw new Error(result.error);
         }
+
+        localStorage.setItem('JWT-token', result.token);
+        
         console.log('login successful:', result); 
         window.alert(result.message + '\n' + 'You have also received a JWT TOKEN!');
         // Re-enable button after error
         loginButton.style.pointerEvents = 'auto';
+        
     } catch (error) {
         console.error('login failed');  
         window.alert(error.message);

@@ -1,7 +1,7 @@
 const db = require('../db/index');
 
-const doesExist = async (username) => {
-    const result = await db.query('SELECT * FROM app_users WHERE username = $1',[username]);
+const doesExist = async (username, role) => {
+    const result = await db.query('SELECT * FROM app_users WHERE username = $1 AND role = $2' ,[username, role]);
     return result.rows.length > 0 ? result.rows[0]:false
 };
 

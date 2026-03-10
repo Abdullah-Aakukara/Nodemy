@@ -8,9 +8,9 @@ const {doesExist, addNewUser} = require('../services/auth.service');
 
 
 const handleRegister = async (req, res) => {
-    const {username, password} = req.body
+    const {username, password, role} = req.body
     
-    if(await doesExist(username)) {
+    if(await doesExist(username, role)) {
         return res.status(409).json(
             {
                 error: `User Already Exists!`

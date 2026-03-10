@@ -14,6 +14,7 @@ const registerValidate = [
 const loginValidate = [
     body('username').isEmail().notEmpty(),
     body('password').notEmpty(),
+    body('role').notEmpty(),
     (req, res, next) => {
         const error = validationResult(req);
         if (!error.isEmpty()) {
@@ -35,8 +36,8 @@ const checkoutValidate = [
 ]
 
 const uploadValidate = [
-    body('description').exists().isLength({min:10, max: 50}).withMessage("Please provide course description!"),
-    body('price').isNumeric().withMessage("Please provide course\'s price!"), 
+    body('description').isLength({min:10, max: 50}).withMessage("Please provide course description!"),
+    body('price').isNumeric().withMessage("Please set the course\'s fee !"), 
     body('instructor_id').isNumeric().withMessage("Please provide course instructor\'s ID!"), 
     (req, res, next) => {
         const error = validationResult(req);

@@ -15,7 +15,7 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
     const course = await getCourse(courseId);
     if (!course) {
         return res.status(404).json({
-            message : `Course ${courseId} not found!` 
+            error : `Course ${courseId} not found!` 
         })
     }
     let client;
@@ -24,14 +24,14 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
             const token = req.headers['authorization'].split(' ')[1];
             if (!token) {
                 return res.status(401).json({
-                    message: "Create a Student account to enroll in a Course!"
+                    error: "Create a Student account to enroll in a Course!"
                 })
             }
             const user = jwt.verify(token, process.env.JWT_SECRET);
 
             //check for student account only 
             if (user.role !== 'student') {
-                return res.status(403).json("Student Account is required to enroll in Course");
+                return res.status(403).json({ error : "Student Account is required to enroll in Course"});
             }
             // Initialize a db client for critical transactions
             client = await dbClientInit();
@@ -39,7 +39,7 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
             const isAlreadyEnrolled = await client.query('SELECT * FROM enrollments WHERE student_id = $1 AND enrolled_in = $2',[user.id, req.query.course_id]);
             if (isAlreadyEnrolled.rowCount) {
                  return res.status(409).json({
-                     message: `${user.username} is already enrolled in Course: ${course.description}`
+                     error: `${user.username} is already enrolled in Course: ${course.description}`
                  })    
             }   
             
@@ -57,20 +57,20 @@ paymentRouter.post('/checkout', checkoutValidate, async (req, res) => {
                 await client.query('INSERT INTO enrollments (student_id, enrolled_in) VALUES ($1, $2) RETURNING *', [user.id, courseId]);
                 await client.query('COMMIT');
                 res.status(200).json({
-                    message: `You have successfully enrolled in Course: ${course.description}`
+                    message: `PAYMENT SUCCESSFUL! ✅\nYou have successfully enrolled in Course: ${course.description}`
                 })
 
             } else {
                 await client.query('UPDATE transactions SET status = $1 WHERE user_id = $2',['failed', user.id]);
                 await client.query('COMMIT');
                 res.status(500).json({
-                    message: "Transaction Failed! Insufficient Balance!"
+                    error: "Transaction Failed! ❌\nInsufficient Balance!"
                 })
             }       
         } catch(error) {
             await client.query('ROLLBACK');
             console.error(error.stack);
-            res.status(500).json({ message: "Internal server error!"})
+            res.status(500).json({ error: "Internal server error!"})
         } finally {
             if(client) {
                 client.release();

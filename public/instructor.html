@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <title> Nodemy | Faculty Dashboard </title>
+    <script src="./pages/instructor/instructor.js" defer></script>
+    <link rel="stylesheet" href="../../styles/style.css">
+</head>
+<body>
+    <div>
+        <h1> Welcome Faculty 👨‍🏫</h1>
+        <p> Fill up the details below to craft a brand New Course! <p>
+
+        <form id="new-course">
+            <label for="course-description"> Course Description: </label>
+            <input id="course-description" min="15" required/>
+            <br/>
+            <label for="course-fee"> Course Fee: </label>
+            <input id="course-fee" type="number" min="450" max="2000" required/>
+            <br/>
+            <label for="course-faculty-id"> Your Faculty ID: </label>
+            <input id="course-faculty-id" type="number" required/>
+            <br/>
+            <button id="course-submit"> Create this Course!</button> 
+        </form>
+    </div>
+</body>
+</html>

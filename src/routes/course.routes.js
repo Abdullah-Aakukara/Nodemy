@@ -8,12 +8,12 @@ courseRouter.post('/upload', uploadValidate, authorize(['admin', 'instructor']),
     try {
         const course = await addCourse(req.body); 
         res.status(201).json({
-            message : `YOU have recently uploaded a NEW COURSE named: ${course.description} !`
+            message : `WELLDONE FACULTY! \nYou have uploaded a NEW COURSE named: ${course.description}!`
      });
     } catch(error) {
         console.error(error.stack);
         res.status(500).json({
-            message : "Internal server error, try again !"
+            error : "Internal server error, try again !"
         })
     }
     

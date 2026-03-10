@@ -2,12 +2,12 @@ const {doesExist} = require('../services/auth.service')
 const bcrypt = require('bcrypt')
 
 const userAuth = async (req, res, next) => {
-    const {username, password} = req.body;
-    const user = await doesExist(username);
+    const {username, password, role} = req.body;
+    const user = await doesExist(username, role);
 
     if(!user) {
         return res.status(404).json({
-                message: "User not found!"
+                error: "User not found!"
         })
     }
 

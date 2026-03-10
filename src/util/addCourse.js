@@ -1,9 +1,9 @@
 const db = require('../db/index');
 
 const addCourse = async (courseDetails) => {
-    const {description, price, instructorId} = courseDetails;
+    const {description, price, instructor_id} = courseDetails;
 
-    const newCourse = await db.query('INSERT INTO courses (description, price, instructor_id) VALUES($1, $2, $3) RETURNING *', [description, price, instructorId])
+    const newCourse = await db.query('INSERT INTO courses (description, price, instructor_id) VALUES($1, $2, $3) RETURNING *', [description, price, instructor_id])
     return newCourse.rows[0];
 }
 
